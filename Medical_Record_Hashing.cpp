@@ -113,48 +113,93 @@ void CITY::search()
 
 void CITY::deletE()
 {
-    int patient_key;
-    int no,f=0,cno;
-    cout<<"\nEnter Patient Id to DELETE: ";
-    cin>>patient_key;
-    for(i=0;i<n;i++)
-    {
-        no=patient_key%10;
-        if(h[no].patient_id==patient_key)
-        {
-            f=1;
-            h[no].patient_id = -1;
-            h[no].name = "";
-            h[no].age = 0;
-            h[no].gen = "";
-            h[no].history = "";
-            h[no].plan = "";
-            if(c[no] != 0)
-            {
-                cno=c[no];
-                h[no].patient_id=h[cno].patient_id;
-                h[no].name = h[cno].name;
-                h[no].age = h[cno].age;
-                h[no].gen = h[cno].gen;
-                h[no].history =h[cno].history;
-                h[no].plan =h[cno].plan;
-                c[no]=c[cno];
-                h[cno].patient_id = -1;
-                h[cno].name = "";
-                h[cno].age = 0;
-                h[cno].gen = "";
-                h[cno].history = "";
-                h[cno].plan = "";
+    int patient_key, no, next_pos,nnext_pos;
+    bool record_found = false;
+    
+    cout << "\nEnter Patient Id to DELETE: ";
+    cin >> patient_key;
+
+    // Calculate initial index from the patient key
+    no = patient_key % 10;
+
+    // Check if the patient ID is at the initial position
+    if (h[no].patient_id == patient_key) {
+        // Found the record at the initial position, delete it
+        h[no].patient_id = -1;
+        h[no].name = "";
+        h[no].age = 0;
+        h[no].gen = "";
+        h[no].history = "";
+        h[no].plan = "";
+        
+        // Update chain length array if necessary
+        if (c[no] != 0) {
+            // Move the next position's data back to the current position
+            next_pos = c[no];
+            h[no].patient_id = h[next_pos].patient_id;
+            h[no].name = h[next_pos].name;
+            h[no].age = h[next_pos].age;
+            h[no].gen = h[next_pos].gen;
+            h[no].history = h[next_pos].history;
+            h[no].plan = h[next_pos].plan;
+            
+            // Clear the next position and adjust the chain
+            h[next_pos].patient_id = -1;
+            h[next_pos].name = "";
+            h[next_pos].age = 0;
+            h[next_pos].gen = "";
+            h[next_pos].history = "";
+            h[next_pos].plan = "";
+            c[no] = 0;
+        }
+        
+        record_found = true;
+        cout << "\nRecord deleted successfully at position " << no;
+    }
+    if (h[no].patient_id != patient_key) {
+        // Patient ID not found at the initial position
+        if (c[no] != 0) {
+            // Follow the chain length array to the next position
+            next_pos = c[no];
+            
+            // Check if the patient ID is at the next position
+            if (h[next_pos].patient_id == patient_key) {
+                // Found the record at the next position, delete it
+                h[next_pos].patient_id = -1;
+                h[next_pos].name = "";
+                h[next_pos].age = 0;
+                h[next_pos].gen = "";
+                h[next_pos].history = "";
+                h[next_pos].plan = "";
+                
+            if (c[next_pos] != 0) {
+            // Move the next position's data back to the current position
+            nnext_pos = c[next_pos];
+            h[next_pos].patient_id = h[nnext_pos].patient_id;
+            h[next_pos].name = h[nnext_pos].name;
+            h[next_pos].age = h[nnext_pos].age;
+            h[next_pos].gen = h[nnext_pos].gen;
+            h[next_pos].history = h[nnext_pos].history;
+            h[next_pos].plan = h[nnext_pos].plan;
+            
+            // Clear the next position and adjust the chain
+            h[nnext_pos].patient_id = -1;
+            h[nnext_pos].name = "";
+            h[nnext_pos].age = 0;
+            h[nnext_pos].gen = "";
+            h[nnext_pos].history = "";
+            h[nnext_pos].plan = "";
+            c[next_pos] = c[nnext_pos];
+        }
+                
+                record_found = true;
+                cout << "\nRecord deleted successfully at chained position " << next_pos;
             }
-            cout<<"\nRecord deleted successfully";
-            break;
         }
-        else
-        {
-            f=0;
-            cout<<"\nRecord is not Found";
-            break;
-        }
+    }
+    
+    else {
+        cout << "\nRecord not found";
     }
 }
 
@@ -221,7 +266,7 @@ int main()
 			c.accept();
 			break;
 		case 3:
-		    cout<<"\n| Track NO |\t TITLE |\t SINGER |\t COMPOSER |\t CHAIN |\t";
+		    cout<<"\n| PATIENT ID |\t NAME |\t AGE |\t GENDER |\t HISTORY |\t PLAN |\tCHain\n";
 			c.HTable();
 			break;
 		case 4:
