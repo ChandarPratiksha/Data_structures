@@ -1,247 +1,280 @@
 #include<iostream>
+#include<string>
 using namespace std;
 
-class lms {
+class sll {
 public:
     int bid, price;
-    string title, author, ISBN;
-    bool availabilityStatus;
-    lms *next, *temp;
-    void create1();
-    void create();
+    string title, author, isbn;
+    bool status;
+    sll* next;
+    void insertion();
     void display();
-    void insertNode();
-    void deleteNode();
-    void insertAtBeginning();
-    void insertAtEnd();
-    void insertAtMiddle();
-    void deleteAtBeginning();
-    void deleteAtEnd();
-    void deleteByBookID(int bookID);
-    void searchByBookID(int bookID);
-}*start;
+    void display1();
+    void searchByTitle(string title);
+    void insertNewBook();
+    void insertAtStart();
+    void insertAtPosition(int position);
+    void deleteFirst(); // Delete first record
+    void deleteByTitle(string title); // Delete book by title
+    void deleteLast(); // Delete last record
+}* start;
 
-void lms::create1() {
-    int numBooks;
-    cout << "Enter the number of books you want to create: ";
-    cin >> numBooks;
+void sll::insertion() {
+    sll* newnode;
+    newnode = new sll();
+    cout << "\n Book ID :";
+    cin >> newnode->bid;
+    cout << "Book Title :";
+    cin.ignore();
+    getline(cin, newnode->title);
+    cout << "Book Author :";
+    getline(cin, newnode->author);
+    cout << "Book ISBN :";
+    getline(cin, newnode->isbn);
+    cout << "Book Price :";
+    cin >> newnode->price;
+    cout << "Book Status [Available(1) Unavailable(0)]:";
+    cin >> newnode->status;
+    cout << endl;
 
-    for (int i = 0; i < numBooks; ++i) {
-        temp = new lms;
-        cout << "Enter the details for book " << i + 1 << ":\n";
-        cout << "Book ID, Title, Author, ISBN, Price, Availability Status (1 for available, 0 for unavailable): ";
-        cin >> temp->bid >> temp->title >> temp->author >> temp->ISBN >> temp->price >> temp->availabilityStatus;
-        temp->next = NULL;
-        temp->next = start;
-        start = temp;
+    if (start == NULL) {
+        start = newnode;
+        start->next = NULL;
+        return;
+    }
+
+    sll* temp = start;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newnode;
+}
+
+void sll::display() {
+    sll* temp = start;
+    if (start == NULL) {
+        cout << "List is empty";
+        return;
+    }
+
+    while (temp != NULL) {
+        cout << "\n Book ID : " << temp->bid;
+        cout << "\n Book Title : " << temp->title;
+        cout << "\n Book Author : " << temp->author;
+        cout << "\n Book ISBN : " << temp->isbn;
+        cout << "\n Book Price : " << temp->price;
+        cout << "\n Book Status : " << temp->status;
+        cout << endl;
+        temp = temp->next;
     }
 }
 
-void lms::create() {
-    temp = new lms;
-    cout << "Enter the book ID, Title, Author, ISBN, Price, Availability Status (1 for available, 0 for unavailable) : \n";
-    cin >> temp->bid >> temp->title >> temp->author >> temp->ISBN >> temp->price >> temp->availabilityStatus;
-    temp->next = NULL;
-    if (start == NULL)
-        start = temp;
-    else {
-        temp->next = start;
-        start = temp;
-    }
-}
-
-void lms::display() {
+void sll::display1() {
+    sll* temp;
     temp = start;
     cout << "---------------------------------------------------------------------------------------------\n";
     cout << "Book ID | Title   | Author | ISBN         | Price | Availability Status\n";
     while (temp != NULL) {
         cout << "---------------------------------------------------------------------------------------------\n";
-        cout << temp->bid << "\t| " << temp->title << " | " << temp->author << " | " << temp->ISBN << " | " << temp->price << " | " << (temp->availabilityStatus ? "Available" : "Unavailable") << endl;
+        cout << temp->bid << "\t| " << temp->title << " | " << temp->author << " | " << temp->isbn << " | " << temp->price << " | " << (temp->status ? "Available" : "Unavailable") << endl;
         temp = temp->next;
     }
     cout << "---------------------------------------------------------------------------------------------\n";
 }
 
-void lms::insertNode() {
-    int insertChoice;
-    cout << "Where would you like to insert the new node?\n";
-    cout << "1. At the Beginning\n";
-    cout << "2. At the End\n";
-    cout << "3. In the Middle\n";
-    cin >> insertChoice;
-
-    switch (insertChoice) {
-        case 1:
-            insertAtBeginning();
-            break;
-        case 2:
-            insertAtEnd();
-            break;
-        case 3:
-            insertAtMiddle();
-            break;
-        default:
-            cout << "Invalid choice. Please try again.\n";
-    }
-}
-
-void lms::deleteNode() {
-    int deleteChoice;
-    cout << "Where would you like to delete the node from?\n";
-    cout << "1. At the Beginning\n";
-    cout << "2. At the End\n";
-    cout << "3. By Book ID\n";
-    cin >> deleteChoice;
-
-    switch (deleteChoice) {
-        case 1:
-            deleteAtBeginning();
-            break;
-        case 2:
-            deleteAtEnd();
-            break;
-        case 3:
-            int bookID;
-            cout << "Enter the Book ID to delete: ";
-            cin >> bookID;
-            deleteByBookID(bookID);
-            break;
-        default:
-            cout << "Invalid choice. Please try again.\n";
-    }
-}
-
-void lms::insertAtBeginning() {
-    create();
-}
-
-void lms::insertAtEnd() {
-    temp = start;
-    while (temp->next != NULL)
-        temp = temp->next;
-    create();
-    temp->next = start;
-}
-
-void lms::insertAtMiddle() {
-    int pos, i;
-    cout << "Enter the position where you want to insert: ";
-    cin >> pos;
-    if (pos == 1)
-        insertAtBeginning();
-    else {
-        temp = start;
-        for (i = 1; i < pos - 1 && temp != NULL; i++)
-            temp = temp->next;
-        if (temp == NULL)
-            cout << "Position out of range\n";
-        else {
-            create();
-            temp->next = start;
+void sll::searchByTitle(string title) {
+    sll* temp = start;
+    bool found = false;
+    while (temp != NULL) {
+        if (temp->title == title) {
+            cout << "\n Book ID : " << temp->bid;
+            cout << "\n Book Title : " << temp->title;
+            cout << "\n Book Author : " << temp->author;
+            cout << "\n Book ISBN : " << temp->isbn;
+            cout << "\n Book Price : " << temp->price;
+            cout << "\n Book Status : " << temp->status;
+            cout << endl;
+            found = true;
         }
+        temp = temp->next;
     }
+    if (!found)
+        cout << "Book with title \"" << title << "\" not found.\n";
 }
 
-void lms::deleteAtBeginning() {
-    if (start == NULL) {
-        cout << "List is empty\n";
+void sll::insertNewBook() {
+    insertion();
+}
+
+void sll::insertAtStart() {
+    sll* newnode;
+    newnode = new sll();
+    cout << "\n Book ID :";
+    cin >> newnode->bid;
+    cout << "Book Title :";
+    cin.ignore();
+    getline(cin, newnode->title);
+    cout << "Book Author :";
+    getline(cin, newnode->author);
+    cout << "Book ISBN :";
+    getline(cin, newnode->isbn);
+    cout << "Book Price :";
+    cin >> newnode->price;
+    cout << "Book Status [Available(1) Unavailable(0)]:";
+    cin >> newnode->status;
+    cout << endl;
+
+    newnode->next = start;
+    start = newnode;
+}
+
+void sll::insertAtPosition(int position) {
+    if (position <= 0) {
+        cout << "Invalid position.\n";
         return;
     }
-    temp = start;
+
+    sll* newnode = new sll();
+    cout << "\n Book ID :";
+    cin >> newnode->bid;
+    cout << "Book Title :";
+    cin.ignore();
+    getline(cin, newnode->title);
+    cout << "Book Author :";
+    getline(cin, newnode->author);
+    cout << "Book ISBN :";
+    getline(cin, newnode->isbn);
+    cout << "Book Price :";
+    cin >> newnode->price;
+    cout << "Book Status [Available(1) Unavailable(0)]:";
+    cin >> newnode->status;
+    cout << endl;
+
+    if (position == 1) {
+        newnode->next = start;
+        start = newnode;
+        return;
+    }
+
+    sll* temp = start;
+    for (int i = 1; i < position - 1 && temp != NULL; i++) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        cout << "Invalid position.\n";
+        return;
+    }
+
+    newnode->next = temp->next;
+    temp->next = newnode;
+}
+
+void sll::deleteFirst() {
+    if (start == NULL) {
+        cout << "List is empty.\n";
+        return;
+    }
+    sll* temp = start;
     start = start->next;
     delete temp;
+    cout << "First record deleted successfully.\n";
 }
 
-void lms::deleteAtEnd() {
+void sll::deleteByTitle(string title) {
     if (start == NULL) {
-        cout << "List is empty\n";
+        cout << "List is empty.\n";
         return;
     }
-    temp = start;
-    while (temp->next->next != NULL)
-        temp = temp->next;
-    delete temp->next;
-    temp->next = NULL;
-}
-
-void lms::deleteByBookID(int bookID) {
-    if (start == NULL) {
-        cout << "List is empty\n";
-        return;
-    }
-    temp = start;
-    lms *prev = NULL;
-    while (temp != NULL && temp->bid != bookID) {
-        prev = temp;
-        temp = temp->next;
-    }
-    if (temp == NULL) {
-        cout << "Book ID not found\n";
-        return;
-    }
-    if (prev == NULL)
+    if (start->title == title) {
+        sll* temp = start;
         start = start->next;
-    else
-        prev->next = temp->next;
-    delete temp;
-}
-
-void lms::searchByBookID(int bookID) {
-    temp = start;
-    while (temp != NULL) {
-        if (temp->bid == bookID) {
-            cout << "Book found:\n";
-            cout << "Book ID: " << temp->bid << endl;
-            cout << "Title: " << temp->title << endl;
-            cout << "Author: " << temp->author << endl;
-            cout << "ISBN: " << temp->ISBN << endl;
-            cout << "Price: " << temp->price << endl;
-            cout << "Availability Status: " << (temp->availabilityStatus ? "Available" : "Unavailable") << endl;
+        delete temp;
+        cout << "Record with title \"" << title << "\" deleted successfully.\n";
+        return;
+    }
+    sll* prev = start;
+    sll* curr = start->next;
+    while (curr != NULL) {
+        if (curr->title == title) {
+            prev->next = curr->next;
+            delete curr;
+            cout << "Record with title \"" << title << "\" deleted successfully.\n";
             return;
         }
+        prev = curr;
+        curr = curr->next;
+    }
+    cout << "Book with title \"" << title << "\" not found.\n";
+}
+
+void sll::deleteLast() {
+    if (start == NULL) {
+        cout << "List is empty.\n";
+        return;
+    }
+    if (start->next == NULL) {
+        delete start;
+        start = NULL;
+        cout << "Last record deleted successfully.\n";
+        return;
+    }
+    sll* temp = start;
+    while (temp->next->next != NULL) {
         temp = temp->next;
     }
-    cout << "Book with ID " << bookID << " not found\n";
+    delete temp->next;
+    temp->next = NULL;
+    cout << "Last record deleted successfully.\n";
 }
 
 int main() {
-    int ch;
-    lms b;
-    do {
-        cout << "Enter your choice: \n";
-        cout << "1. CREATE\n";
-        cout << "2. DISPLAY\n";
-        cout << "3. INSERT NEW NODE\n";
-        cout << "4. DELETE A NODE\n";
-        cout << "5. SEARCH BY BOOK ID\n";
-        cout << "6. EXIT\n";
-        cin >> ch;
-        switch (ch) {
-            case 1:
-                b.create1();
-                break;
-            case 2:
-                b.display();
-                break;
-            case 3:
-                b.insertNode();
-                break;
-            case 4:
-                b.deleteNode();
-                break;
-            case 5:
-                int bookID;
-                cout << "Enter the Book ID to search: ";
-                cin >> bookID;
-                b.searchByBookID(bookID);
-                break;
-            case 6:
-                cout << "Exiting program.\n";
-                break;
-            default:
-                cout << "Invalid choice. Please try again.\n";
-        }
-    } while (ch != 6);
+    sll s;
+    int no, i;
+    cout << "Enter the number of book records to insert in the list: ";
+    cin >> no;
+    cout << endl;
+    for (i = 0; i < no; i++) {
+        cout << "Enter the info of book " << i + 1 << " : ";
+        s.insertion();
+    }
+
+    s.display();
+    s.display1();
+
+    string search_title;
+    cout << "\nEnter the title to search: ";
+    cin.ignore();
+    getline(cin, search_title);
+    s.searchByTitle(search_title);
+    
+    cout << "\nInsert a new book record:\n";
+    s.insertNewBook();
+    cout << "\nUpdated list of books:\n";
+    s.display1();
+
+    cout << "\nInsert a new book record at the start:\n";
+    s.insertAtStart();
+    cout << "\nUpdated list of books:\n";
+    s.display1();
+
+    s.deleteFirst();
+    cout << "\nUpdated list of books:\n";
+    s.display1();
+
+    string delete_title;
+    cout << "\nEnter the title to delete: ";
+    cin.ignore();
+    getline(cin, delete_title);
+    s.deleteByTitle(delete_title);
+    cout << "\nUpdated list of books:\n";
+    s.display1();
+
+    cout << "\nDeleting the last record...\n";
+    s.deleteLast();
+    cout << "\nUpdated list of books:\n";
+    s.display1();
 
     return 0;
 }
